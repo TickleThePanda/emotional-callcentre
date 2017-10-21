@@ -34,7 +34,7 @@ const buildAudioMessage = function(content) {
   
   let headersArray = new Buffer(headers);
 
-  let buffer = new ArrayBuffer(2 + headersArray.length + riff.length);
+  let buffer = new ArrayBuffer(2 + headersArray.length + content.length);
 
   let sizeDataView = new DataView(buffer, 0, 2);
   let headersDataView = new DataView(buffer, 2, headersArray.length);
