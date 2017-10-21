@@ -119,9 +119,7 @@ module.exports = class SpeechToTextClient {
 
             this.wsc.on('message', (...args) => {
               let message = args[0];
-              if(message.indexOf("turn.phase") >= 0) {
-                console.log("message: ", args);
-              }
+              console.log(message);
             });
           });
         })
