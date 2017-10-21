@@ -1,7 +1,6 @@
 const request = require('request');
 const WebSocket = require('ws');
 const generateUuid = require('uuid/v4');
-const TextEncoder = require('text-encoding')
 
 const headerSeparator = "\r\n";
 
@@ -29,8 +28,8 @@ const buildRiffMessage = function() {
   let riff = "RIFF$   WAVEfmt      D¬  ˆX   data    ";
 
   let sizeArray = Uint16Array.of([headers.length]);
-  let headersArray = new TextEncoder().encode(headers);
-  let riffArray = new TextEncoder().encode(riff);
+  let headersArray = new ArrayBuffer(headers);
+  let riffArray = new ArrayBuffer(riff);
 
   let buffer = new ArrayBuffer(16 + 8 * headersArray.length + 8 * riffArray.length)
 
