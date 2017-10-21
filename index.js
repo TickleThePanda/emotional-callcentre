@@ -4,6 +4,16 @@ var expressWs = require('express-ws')(app);
 
 app.set('port', (process.env.PORT || 5000));
 
+app.get('/', function(req, res, next) {
+  console.log(req.body);
+  res.status(200).send();
+});
+
+app.post('/', function(req, res, next) {
+  console.log(req.body);
+  res.status(200).send();
+});
+
 app.get("/ncco", function(req, res, next) {
   res.sendFile(__dirname + "/ncco.json");
 });
