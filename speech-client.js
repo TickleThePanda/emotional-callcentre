@@ -6,7 +6,7 @@ const fs = require('fs');
 
 const headerSeparator = "\r\n";
 
-const riff = fs.readFile(__dirname + "/riff.wav")
+const riff = fs.readFileSync(__dirname + "/riff.wav");
 
 console.log(riff);
 
