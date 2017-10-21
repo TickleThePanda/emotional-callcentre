@@ -37,13 +37,13 @@ const buildRiffMessage = function() {
 
   let buffer = new ArrayBuffer(16 + 8 * headersArray.length + 8 * riffArray.length);
 
-  let dataView = new DataView(buffer);
+  let dataView = new DataView(buffer);  
 
   dataView.setUint16(0, sizeArray);
   dataView.setUint8(2, headersArray);
   dataView.setUint8(2 + headersArray.length, riffArray)
 
-  console.log(buffer.toString());
+  console.log(dataView);
 
   return buffer;
 }
