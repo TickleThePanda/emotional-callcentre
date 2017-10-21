@@ -23,21 +23,31 @@ app.get("/ncco", function(req, res, next) {
 app.ws('/connect', function(ws, req) {
   console.log("phone call connected to us");
   const client = new SpeechToTextClient(process.env.SPEECH_KEY);
-  client.connect().then(() => {
-    client.on('message', m => {
-      console.log(m);
-    });
+  client.connect();
 
-    ws.on('message', function(msg) {
-      if (msg instanceof String) {
-        console.log(msg);
-      } else if(msg instanceof Buffer) {
-        ws.send(msg);
+  client.on('message', m => {
+    console.log(m);
+  });
+
+  let bufferedItems = [];
+
+  ws.on('message', function(msg) {
+    if (msg instanceof String) {
+      console.log(msg);
+    } else if(msg instanceof Buffer) {
+      ws.send(msg);
+      if(!client.ready) {
+        bufferedItems.add(msg);
+      } else {
+        while(bufferedItems.length) {
+          client.send(bufferedItems.shift());
+        }
         client.send(msg);
       }
-    });
-    ws.on('close', client.close);
+    }
   });
+  ws.on('close', client.close);
+
 });
 
 app.listen(app.get('port'), function() {

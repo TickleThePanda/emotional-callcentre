@@ -112,43 +112,40 @@ module.exports = class SpeechToTextClient {
   }
 
   connect() {
-    return this.renewToken()
+    this.renewToken()
         .then(token => {
-          return new Promise((resolve, reject) => {
+          let headers = {
+            'Authorization': token
+          };
 
-            let headers = {
-              'Authorization': token
-            };
+          let options = {
+            headers: headers
+          };
 
-            let options = {
-              headers: headers
-            };
+          console.log('connecting to web socket', options);
 
-            console.log('connecting to web socket', options);
+          this.wsc = new WebSocket(this.SPEECH_ENDPOINT, options);
 
-            this.wsc = new WebSocket(this.SPEECH_ENDPOINT, options);
+          this.wsc.on('open', (...args) => {
+            console.log("opened web socket to client", args);
 
-            this.wsc.on('open', (...args) => {
-              console.log("opened web socket to client", args);
+            this.wsc.send(buildFirstMessage());
 
-              this.wsc.send(buildFirstMessage());
+            this.wsc.send(buildRiffMessage(), () => this.ready = true);
 
-              this.wsc.send(buildRiffMessage(), resolve);
+          });
 
-            });
+          this.wsc.on('close', (...args) => console.log("closed with code", args));
 
-            this.wsc.on('close', (...args) => console.log("closed with code", args));
-
-            this.wsc.on('message', (raw) => {
-              let message = fromRawToMessage(raw);
-              let type = message.headers["Path"];
-              if(this.listeners['message']) {
-                this.listeners['message'].forEach(f => f(message));
-              }
-              if(this.listeners[type]) {
-                this.listeners[type].forEach(f => f(message));
-              }
-            });
+          this.wsc.on('message', (raw) => {
+            let message = fromRawToMessage(raw);
+            let type = message.headers["Path"];
+            if(this.listeners['message']) {
+              this.listeners['message'].forEach(f => f(message));
+            }
+            if(this.listeners[type]) {
+              this.listeners[type].forEach(f => f(message));
+            }
           });
         })
         .catch(e => {
