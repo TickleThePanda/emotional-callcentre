@@ -57,10 +57,29 @@ const buildRiffMessage = function() {
   return buildAudioMessage(riff);
 }
 
+const fromRawToMessage = function(raw) {
+  let split = raw.split(headerSeparator + headerSeparator);
+  let headersAsText = split[0];
+  let payloadAsText = split[1];
+  let headers = headersAsText
+      .split(headerSeparator)
+      .reduce((map, obj) => {
+        let headerSplit = obj.split(":");
+        map[headerSplit[0].trim()] = headerSplit[1].trim();
+      }, {});
+  let payload = JSON.parse(payloadAsText);
+
+  return {
+    headers,
+    payload
+  };
+}
+
 module.exports = class SpeechToTextClient {
 
   constructor(key) {
     this.key = key;
+    this.listeners = {};
     this.TOKEN_ENDPOINT = 'https://api.cognitive.microsoft.com/sts/v1.0/issueToken';
     this.SPEECH_PATH = '/speech/recognition/dictation/cognitiveservices/v1';
     this.SPEECH_ENDPOINT = 'wss://speech.platform.bing.com' + this.SPEECH_PATH + '?language=en-US';
@@ -117,15 +136,22 @@ module.exports = class SpeechToTextClient {
 
             this.wsc.on('close', (...args) => console.log("closed with code", args));
 
-            this.wsc.on('message', (...args) => {
-              let message = args[0];
-              console.log(message);
+            this.wsc.on('message', (raw) => {
+              console.log(raw);
+              console.log(fromRawToMessage(raw));
             });
           });
         })
         .catch(e => {
           console.log("couldn't connect to service", e);
         });
+  }
+
+  on(type, f) {
+    if(!this.listeners[type]) {
+      this.listeners[type] = [];
+    }
+    this.listeners[type].push(f);
   }
 
   send(buffer) {
