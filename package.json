@@ -19,6 +19,8 @@
   "homepage": "https://github.com/ticklethepanda/emotional-callcentre#readme",
   "dependencies": {
     "express": "^4.16.2",
-    "express-ws": "^3.0.0"
+    "express-ws": "^3.0.0",
+    "request": "^2.83.0",
+    "ws": "^3.2.0"
   }
 }
