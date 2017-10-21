@@ -31,14 +31,13 @@ const buildRiffMessage = function() {
   let headersArray = new ArrayBuffer(headers);
   let riffArray = new ArrayBuffer(riff);
 
-  let buffer = new ArrayBuffer(16 + 8 * headersArray.length + 8 * riffArray.length)
+  let buffer = new ArrayBuffer(16 + 8 * headersArray.length + 8 * riffArray.length);
 
-  let array16 = new Uint16Array(buffer);
-  let array8 = new Uint8Array(buffer);
+  let dataView = new DataView(buffer);
 
-  array16.set(sizeArray);
-  array8.set(headersArray, 2);
-  array8.set(riffArray, 2 + riffArray.length);
+  dataView.setInt16(sizeArray);
+  dataView.setInt8(headersArray, 2);
+  dataView.setInt8(riffArray, 2 + headersArray.length)
 
   console.log(buffer);
 
