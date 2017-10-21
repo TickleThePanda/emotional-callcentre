@@ -138,7 +138,6 @@ module.exports = class SpeechToTextClient {
             this.wsc.on('close', (...args) => console.log("closed with code", args));
 
             this.wsc.on('message', (raw) => {
-              console.log(raw);
               console.log(fromRawToMessage(raw));
             });
           });
