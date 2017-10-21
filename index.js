@@ -2,6 +2,8 @@ var express = require('express');
 var app = express();
 var expressWs = require('express-ws')(app);
 
+app.set('port', (process.env.PORT || 5000));
+
 app.get("/ncco", function(req, res, next) {
   res.sendFile("/ncco.json")
 });
@@ -17,4 +19,6 @@ app.ws('/connect', function(ws, req) {
   });
 });
 
-app.listen(3000);
+app.listen(app.get('port'), function() {
+  console.log('Node app is running on port', app.get('port'));
+});
