@@ -1,6 +1,7 @@
 const request = require('request');
 const WebSocket = require('ws');
 const generateUuid = require('uuid/v4');
+const TextEncoder = require('text-encoding')
 
 const headerSeparator = "\r\n";
 
@@ -28,17 +29,21 @@ const buildRiffMessage = function() {
   let riff = "RIFF$   WAVEfmt      D¬  ˆX   data    ";
 
   let sizeArray = Uint16Array.of([headers.length]);
-  let headersArray = new TextEncoder("us-ascii").encode(headers);
-  let riffArray = new TextEncoder("us-ascii").encode(riff);
+  let headersArray = new TextEncoder().encode(headers);
+  let riffArray = new TextEncoder().encode(riff);
 
-  let payload = new Uint8Array(2 + headersArray.length + riffArray.length);
+  let buffer = new ArrayBuffer(16 + 8 * headersArray.length + 8 * riffArray.length)
 
+  let array16 = new Uint16Array(buffer);
+  let array8 = new Uint8Array(buffer);
 
-  payload.set(size);
-  payload.set(headersArray, 2);
-  payload.set(riffArray, 2 + headersArray.length);
+  array16.set(sizeArray);
+  array8.set(headersArray, 2);
+  array8.set(riffArray, 2 + riffArray.length);
 
-  return payload;
+  console.log(buffer);
+
+  return buffer;
 }
 
 const buildBinaryMessage = function(content) {
