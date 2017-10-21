@@ -2,7 +2,11 @@ const request = require('request');
 const WebSocket = require('ws');
 const generateUuid = require('uuid/v4');
 
+const fs = require('fs');
+
 const headerSeparator = "\r\n";
+
+const riff = fs.readFile(__dirname + "/riff.wav")
 
 const createBaseHeader = function(path) {
   let uuid = generateUuid().replace(/-/g, '');
@@ -25,18 +29,16 @@ const buildFirstMessage = function() {
 
 const buildRiffMessage = function() {
   let headers = createBaseHeader("audio");
-  let riff = "RIFF$   WAVEfmt      D¬  ˆX   data    ";
 
   let headersArray = new Buffer(headers);
-  let riffArray = new Buffer(riff);
 
-  let buffer = new ArrayBuffer(2 + headersArray.length + riffArray.length);
+  let buffer = new ArrayBuffer(2 + headersArray.length + riff.length);
 
   let sizeDataView = new DataView(buffer, 0, 2);
   let headersDataView = new DataView(buffer, 2, headersArray.length);
   let contentDataView = new DataView(buffer,
     2 + headersArray.length,
-    riffArray.length);
+    riff.length);
 
   sizeDataView.setUint16(0, headersArray.length);
 
@@ -44,8 +46,8 @@ const buildRiffMessage = function() {
     headersDataView.setUint8(i, headersArray[i]);
   }
 
-  for(let i = 0; i < riffArray.length; i++) {
-    contentDataView.setUint8(i, riffArray[i]);
+  for(let i = 0; i < riff.length; i++) {
+    contentDataView.setUint8(i, riff[i]);
   }
 
   let dataView = new DataView(buffer);
