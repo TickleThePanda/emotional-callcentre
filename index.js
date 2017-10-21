@@ -20,7 +20,7 @@ app.get("/ncco", function(req, res, next) {
   res.sendFile(__dirname + "/ncco.json");
 });
 
-async function connect(ws, req) {
+const connect = async function(ws, req) {
   console.log("phone call connected to us");
   const client = new SpeechToTextClient(process.env.SPEECH_KEY);
   await client.connect();
