@@ -39,8 +39,6 @@ module.exports = class SpeechToTextClient {
         .then(token => {
           return new Promise((resolve, reject) => {
 
-            let uuid = generateUuid().replace(/-/g, '');
-            let timestamp = new Date().toISOString();
 
             let headers = {
               'Authorization': token
@@ -55,8 +53,31 @@ module.exports = class SpeechToTextClient {
             this.wsc = new WebSocket(this.SPEECH_ENDPOINT, options);
 
             this.wsc.on('open', (...args) => {
+              let uuid = generateUuid().replace(/-/g, '');
+              let timestamp = new Date().toISOString();
               console.log("opened web socket to client", args);
-              resolve();
+              this.wsc.send("Path: speech.config\r\n"
+                  + "X-RequestId: " + uuid + "\r\n"
+                  + "X-Timestamp: " + timestamp + "\r\n"
+                  + "Content-Type: " + "application/json; charset=utf-8\r\n"
+                  + `{
+                    "context": {
+                      "system": {
+                        "version": "2.0.12341",
+                      },
+                      "os": {
+                        "platform": "N/A",
+                        "name": "N/A",
+                        "version": "N/A"
+                      },
+                      "device": {
+                        "manufacturer": "N/A",
+                        "model": "N/A",
+                        "version": "N/A"
+                        }
+                      },
+                    }
+                  }`, () => resolve);
             });
             this.wsc.on('close', (...args) => console.log("closed with code", args));
 
