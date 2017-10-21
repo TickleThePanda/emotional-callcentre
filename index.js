@@ -24,7 +24,11 @@ app.ws('/connect', function(ws, req) {
   console.log("phone call connected to us");
   const client = new SpeechToTextClient(process.env.SPEECH_KEY);
   client.connect().then(() => {
-    client.on('message', console.log);
+    client.on('message', m => {
+      if(m.headers["Path"] !== 'turn.start') {
+        console.log(m);
+      }
+    });
 
     ws.on('message', function(msg) {
       if (msg instanceof String) {
