@@ -8,11 +8,11 @@
     "eventUrl":[
       "https://emotional-callcentre.herokuapp.com/events"
     ],
-    "from":"447700900000",
+    "from":"442036178286",
     "endpoint":[
       {
         "type":"websocket",
-        "uri":"ws://emotionalcallcentre.herokuapp.com/connect",
+        "uri":"ws://emotional-callcentre.herokuapp.com/connect",
         "content-type":"audio/l16;rate=16000",
         "headers":{
           "whatever":"metadata_you_want"
