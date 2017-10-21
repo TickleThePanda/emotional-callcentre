@@ -104,7 +104,7 @@ module.exports = class SpeechToTextClient {
 
               this.wsc.send(payload);
 
-              this.wsc.send(buildRiffHeader(), () => resolve)
+              this.wsc.send(buildRiffMessage(), () => resolve)
             });
 
             this.wsc.on('close', (...args) => console.log("closed with code", args));
