@@ -37,13 +37,27 @@ const buildRiffMessage = function() {
 
   let buffer = new ArrayBuffer(16 + 8 * headersArray.length + 8 * riffArray.length);
 
-  let dataView = new DataView(buffer);  
+  let sizeDataView = new DataView(buffer, 0, 16);
+  let headersDataView = new DataView(buffer, 16, 8 * headersArray.length);
+  let contentDataView = new DataView(buffer,
+    16 + 8 * headersArray.length,
+    8 * riffArray.length);
 
-  dataView.setUint16(0, sizeArray);
-  dataView.setUint8(2, headersArray);
-  dataView.setUint8(2 + headersArray.length, riffArray)
+  sizeDataView.setUint16(0, sizeArray[0]);
 
-  console.log(dataView);
+  for(let i = 0; i < headersArray.length; i++) {
+    headersDataView.setUint8(i, headersArray[i]);
+  }
+
+  for(let i = 0; i < riffArray.length; i++) {
+    contentDataView.setUint8(i, riffArray[i]);
+  }
+
+  let dataView = new DataView(buffer);
+
+  for(let i = 0; i < dataView.byteLength / 8; i+=8) {
+      console.log(dataView.getUint8(i));
+  }
 
   return buffer;
 }
