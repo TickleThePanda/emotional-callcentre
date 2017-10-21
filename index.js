@@ -37,7 +37,7 @@ app.ws('/connect', function(ws, req) {
     } else if(msg instanceof Buffer) {
       ws.send(msg);
       if(!client.ready) {
-        bufferedItems.add(msg);
+        bufferedItems.push(msg);
       } else {
         while(bufferedItems.length) {
           client.send(bufferedItems.shift());
