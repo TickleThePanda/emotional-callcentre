@@ -2,6 +2,9 @@ const request = require('request');
 const WebSocket = require('ws');
 const generateUuid = require('uuid/v4');
 
+
+const headerSeparator = "\r\n";
+
 module.exports = class SpeechToTextClient {
 
   constructor(key) {
@@ -53,15 +56,16 @@ module.exports = class SpeechToTextClient {
             this.wsc = new WebSocket(this.SPEECH_ENDPOINT, options);
 
             this.wsc.on('open', (...args) => {
+              console.log("opened web socket to client", args);
               let uuid = generateUuid().replace(/-/g, '');
               let timestamp = new Date().toISOString();
-              console.log("opened web socket to client", args);
-              const headerSepartor = "\r\n";
-              let payload = "Path: speech.config" + headerSepartor
-              + "X-RequestId: " + uuid + headerSepartor
-              + "X-Timestamp: " + timestamp + headerSepartor
-              + "Content-Type: " + "application/json; charset=utf-8" + headerSepartor
+              let payload = "Path: speech.config" + headerSeparator
+              + "X-RequestId: " + uuid + headerSeparator
+              + "X-Timestamp: " + timestamp + headerSeparator
+              + "Content-Type: " + "application/json; charset=utf-8" + headerSeparator
               + `{"context":{"system":{"version":"2.0.12341"},"os":{"platform":"N/A","name":"N/A","version":"N/A"},"device":{"manufacturer":"N/A","model":"N/A","version":"N/A"}}}`;
+
+              console.log('sending speech.config payload', payload);
               this.wsc.send(payload, () => resolve);
             });
             this.wsc.on('close', (...args) => console.log("closed with code", args));
