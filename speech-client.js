@@ -27,13 +27,8 @@ const buildRiffMessage = function() {
   let headers = createBaseHeader("audio");
   let riff = "RIFF$   WAVEfmt      D¬  ˆX   data    ";
 
-  let sizeArray = Uint16Array.of([headers.length]);
   let headersArray = new Buffer(headers);
   let riffArray = new Buffer(riff);
-
-  console.log(sizeArray);
-  console.log(headersArray);
-  console.log(riffArray);
 
   let buffer = new ArrayBuffer(16 + 8 * headersArray.length + 8 * riffArray.length);
 
@@ -43,7 +38,7 @@ const buildRiffMessage = function() {
     16 + 8 * headersArray.length,
     8 * riffArray.length);
 
-  sizeDataView.setUint16(0, sizeArray[0]);
+  sizeDataView.setUint16(0, headersArray.length);
 
   for(let i = 0; i < headersArray.length; i++) {
     headersDataView.setUint8(i, headersArray[i]);
