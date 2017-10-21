@@ -35,9 +35,9 @@ const buildRiffMessage = function() {
 
   let dataView = new DataView(buffer);
 
-  dataView.setInt16(sizeArray);
-  dataView.setInt8(headersArray, 2);
-  dataView.setInt8(riffArray, 2 + headersArray.length)
+  dataView.setUint16(sizeArray);
+  dataView.setUint8(headersArray, 2);
+  dataView.setUint8(riffArray, 2 + headersArray.length)
 
   console.log(buffer);
 
