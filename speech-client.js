@@ -48,6 +48,9 @@ module.exports = class SpeechToTextClient {
         ws.on('connection', ws => {
           ws.on('message', console.log);
         });
-      });
+      })
+      .catch(e => {
+        console.log("couldn't connect to service", e);
+      });;
   }
 }
