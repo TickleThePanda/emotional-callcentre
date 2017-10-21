@@ -5,7 +5,6 @@ const SpeechToTextClient = require('./speech-client.js');
 
 app.set('port', (process.env.PORT || 5000));
 
-const speechClient = new SpeechToTextClient(process.env.SPEECH_KEY);
 
 app.get('/', function(req, res, next) {
   console.log("webhook get:", req.body);
@@ -23,7 +22,7 @@ app.get("/ncco", function(req, res, next) {
 
 app.ws('/connect', function(ws, req) {
   console.log("connected");
-  const client = new SpeechToTextClient();
+  const client = new SpeechToTextClient(process.env.SPEECH_KEY);
   client.recognise();
   ws.on('message', function(msg) {
     if (msg instanceof String) {
