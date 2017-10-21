@@ -28,8 +28,8 @@ const buildRiffMessage = function() {
   let riff = "RIFF$   WAVEfmt      D¬  ˆX   data    ";
 
   let sizeArray = Uint16Array.of([headers.length]);
-  let headersArray = new ArrayBuffer(headers);
-  let riffArray = new ArrayBuffer(riff);
+  let headersArray = new Buffer(headers);
+  let riffArray = new Buffer(riff);
 
   console.log(sizeArray);
   console.log(headersArray);
