@@ -1,5 +1,6 @@
 const request = require('request');
 const WebSocket = require('ws');
+const uuid = require('uuid/v4');
 
 module.exports = class SpeechToTextClient {
 
@@ -7,6 +8,7 @@ module.exports = class SpeechToTextClient {
     this.key = key;
     this.TOKEN_ENDPOINT = 'https://api.cognitive.microsoft.com/sts/v1.0/issueToken';
     this.SPEECH_ENDPOINT = 'wss://speech.platform.bing.com/speech/recognition/dictation/cognitiveservices/v1';
+    this.SPEECH_PATH = '/speech/recognition/dictation/cognitiveservices/v1';
   }
 
   renewToken() {
@@ -37,7 +39,10 @@ module.exports = class SpeechToTextClient {
         .then(token => {
           return new Promise((resolve, reject) => {
             let headers = {
-              'Authorization': "Bearer: " + token
+              'Authorization': "Bearer: " + token,
+              'Path': this.SPEECH_PATH,
+              'X-RequestId': uuid().replace('-', ''),
+              'X-Timestamp': new Date().toISOString()
             };
 
             let options = {
