@@ -47,7 +47,7 @@ module.exports = class SpeechToTextClient {
 
         console.log('connecting to web socket');
 
-        const wsc = new WebSocket(this.SPEECH_ENDPOINT, options);
+        this.wsc = new WebSocket(this.SPEECH_ENDPOINT, options);
 
         wsc.on('open', (ws) => console.log("open: ", ws));
         wsc.on('close', console.log)
@@ -57,5 +57,13 @@ module.exports = class SpeechToTextClient {
       .catch(e => {
         console.log("couldn't connect to service", e);
       });;
+  }
+
+  close() {
+    this.wsc.terminate();
+  }
+
+  send(buffer) {
+    this.wsc.send(buffer);
   }
 }
