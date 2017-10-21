@@ -31,6 +31,10 @@ const buildRiffMessage = function() {
   let headersArray = new ArrayBuffer(headers);
   let riffArray = new ArrayBuffer(riff);
 
+  console.log(sizeArray);
+  console.log(headersArray);
+  console.log(riffArray);
+
   let buffer = new ArrayBuffer(16 + 8 * headersArray.length + 8 * riffArray.length);
 
   let dataView = new DataView(buffer);
