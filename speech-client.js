@@ -8,8 +8,6 @@ const headerSeparator = "\r\n";
 
 const riff = fs.readFileSync(__dirname + "/riff.wav");
 
-console.log(riff);
-
 const createBaseHeader = function(path) {
   let uuid = generateUuid().replace(/-/g, '');
   let timestamp = new Date().toISOString();
@@ -58,7 +56,6 @@ const buildBinaryMessage = function(content) {
 const buildRiffMessage = function() {
   return buildBinaryMessage(riff);
 }
-
 
 module.exports = class SpeechToTextClient {
 
@@ -112,13 +109,10 @@ module.exports = class SpeechToTextClient {
             this.wsc.on('open', (...args) => {
               console.log("opened web socket to client", args);
 
-              let payload = buildFirstMessage();
-
-              console.log('sending speech.config payload', payload);
-
-              this.wsc.send(payload);
+              this.wsc.send(buildFirstMessage());
 
               this.wsc.send(buildRiffMessage(), resolve);
+
             });
 
             this.wsc.on('close', (...args) => console.log("closed with code", args));
@@ -136,11 +130,11 @@ module.exports = class SpeechToTextClient {
         });
   }
 
-  close() {
-    this.wsc.terminate();
-  }
-
   send(buffer) {
     this.wsc.send(buildBinaryMessage(buffer));
+  }
+
+  close() {
+    this.wsc.terminate();
   }
 }
