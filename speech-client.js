@@ -27,11 +27,11 @@ const buildRiffMessage = function() {
   let headers = createBaseHeader("audio");
   let riff = "RIFF$   WAVEfmt      D¬  ˆX   data    ";
 
-  let sizeArray = UInt8Array.of([headers.length]);
+  let sizeArray = Uint16Array.of([headers.length]);
   let headersArray = new TextEncoder("us-ascii").encode(headers);
   let riffArray = new TextEncoder("us-ascii").encode(riff);
 
-  let payload = new UInt8Array(2 + headersArray.length + riffArray.length);
+  let payload = new Uint8Array(2 + headersArray.length + riffArray.length);
 
 
   payload.set(size);
