@@ -7,6 +7,8 @@ module.exports = class SpeechToTextClient {
     this.key = key;
     this.TOKEN_ENDPOINT = 'https://api.cognitive.microsoft.com/sts/v1.0/issueToken';
     this.SPEECH_ENDPOINT = 'wss://speech.platform.bing.com/speech/recognition/dictation/cognitiveservices/v1';
+
+    this.connect();
   }
 
   renewToken() {
@@ -32,7 +34,7 @@ module.exports = class SpeechToTextClient {
     });
   }
 
-  recognise(stream) {
+  connect() {
     this.renewToken()
       .then(token => {
         let headers = {
@@ -43,11 +45,14 @@ module.exports = class SpeechToTextClient {
           headers: headers
         };
 
+        console.log('connecting to web socket');
+
         const wsc = new WebSocket(this.SPEECH_ENDPOINT, options);
 
-        wsc.on('open', console.log);
+        wsc.on('open', (ws) => console.log("open: ", ws));
+        wsc.on('close', console.log)
 
-        wsc.on('message', console.log);
+        wsc.on('message', (data) => console.log("message: ", data));
       })
       .catch(e => {
         console.log("couldn't connect to service", e);
