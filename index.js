@@ -5,7 +5,7 @@ var expressWs = require('express-ws')(app);
 app.set('port', (process.env.PORT || 5000));
 
 app.get("/ncco", function(req, res, next) {
-  res.sendFile("/ncco.json")
+  res.sendFile(path.join(__dirname, "/ncco.json"));
 });
 
 app.ws('/connect', function(ws, req) {
