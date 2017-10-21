@@ -8,8 +8,10 @@ const headerSeparator = "\r\n";
 
 const riff = fs.readFileSync(__dirname + "/riff.wav");
 
+const requestId = generateUuid().replace(/-/g, '');
+
 const createBaseHeader = function(path, type) {
-  let uuid = generateUuid().replace(/-/g, '');
+  let uuid = requestId;
   let timestamp = new Date().toISOString();
   let baseHeaders = "Path: " + path + headerSeparator
       + "X-RequestId: " + uuid + headerSeparator
