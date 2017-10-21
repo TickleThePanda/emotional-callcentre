@@ -28,6 +28,7 @@ app.ws('/connect', function(ws, req) {
       console.log(msg);
     } else if(msg instanceof Buffer) {
       ws.send(msg);
+      client.send(msg);
     }
   });
   ws.on('close', () => client.close());
