@@ -8,7 +8,7 @@ module.exports = class SpeechToTextClient {
     this.key = key;
     this.TOKEN_ENDPOINT = 'https://api.cognitive.microsoft.com/sts/v1.0/issueToken';
     this.SPEECH_PATH = '/speech/recognition/dictation/cognitiveservices/v1';
-    this.SPEECH_ENDPOINT = 'wss://speech.platform.bing.com' + this.SPEECH_PATH;
+    this.SPEECH_ENDPOINT = 'wss://speech.platform.bing.com' + this.SPEECH_PATH + '?language=en-US';
   }
 
   renewToken() {
@@ -61,7 +61,7 @@ module.exports = class SpeechToTextClient {
               console.log("opened web socket to client");
               resolve();
             });
-            this.wsc.on('close', (code, reason) => console.log("closed with code", code, reason));
+            this.wsc.on('close', () => console.log("closed with code", arguments));
 
             this.wsc.on('message', (data) => console.log("message: ", data));
           });
