@@ -20,22 +20,21 @@ app.get("/ncco", function(req, res, next) {
   res.sendFile(__dirname + "/ncco.json");
 });
 
-const connect = async function(ws, req) {
+app.ws('/connect', function(ws, req) {
   console.log("phone call connected to us");
   const client = new SpeechToTextClient(process.env.SPEECH_KEY);
-  await client.connect();
-  ws.on('message', function(msg) {
-    if (msg instanceof String) {
-      console.log(msg);
-    } else if(msg instanceof Buffer) {
-      ws.send(msg);
-      client.send(msg);
-    }
-  })
-  ws.on('close', () => client.close());
-}
-
-app.ws('/connect', connect);
+  client.connect().then(() =>
+    ws.on('message', function(msg) {
+      if (msg instanceof String) {
+        console.log(msg);
+      } else if(msg instanceof Buffer) {
+        ws.send(msg);
+        client.send(msg);
+      }
+    })
+  );
+ws.on('close', () => client.close());
+});
 
 app.listen(app.get('port'), function() {
   console.log('Node app is running on port', app.get('port'));
