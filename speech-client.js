@@ -34,27 +34,32 @@ module.exports = class SpeechToTextClient {
 
   connect() {
     return this.renewToken()
-      .then(token => {
-        let headers = {
-          'Authorization': "Bearer: " + token
-        };
+        .then(token => {
+          return new Promise((resolve, reject) => {
+            let headers = {
+              'Authorization': "Bearer: " + token
+            };
 
-        let options = {
-          headers: headers
-        };
+            let options = {
+              headers: headers
+            };
 
-        console.log('connecting to web socket');
+            console.log('connecting to web socket');
 
-        this.wsc = new WebSocket(this.SPEECH_ENDPOINT, options);
+            this.wsc = new WebSocket(this.SPEECH_ENDPOINT, options);
 
-        this.wsc.on('open', () => console.log("connected"));
-        this.wsc.on('close', (code) => console.log("closed with code", code));
+            this.wsc.on('open', () => {
+              console.log("connected");
+              resolve();
+            });
+            this.wsc.on('close', (code) => console.log("closed with code", code));
 
-        this.wsc.on('message', (data) => console.log("message: ", data));
-      })
-      .catch(e => {
-        console.log("couldn't connect to service", e);
-      });
+            this.wsc.on('message', (data) => console.log("message: ", data));
+          });
+        })
+        .catch(e => {
+          console.log("couldn't connect to service", e);
+        });
   }
 
   close() {
