@@ -50,7 +50,7 @@ module.exports = class SpeechToTextClient {
         this.wsc = new WebSocket(this.SPEECH_ENDPOINT, options);
 
         this.wsc.on('open', () => console.log("connected"));
-        this.wsc.on('close', (r) => console.log("closed"));
+        this.wsc.on('close', (code) => console.log("closed with code", code));
 
         this.wsc.on('message', (data) => console.log("message: ", data));
       })
