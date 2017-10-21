@@ -1,6 +1,6 @@
 const request = require('request');
 const WebSocket = require('ws');
-const uuidGenerator = require('uuid/v4');
+const generateUuid = require('uuid/v4');
 
 module.exports = class SpeechToTextClient {
 
@@ -39,7 +39,7 @@ module.exports = class SpeechToTextClient {
         .then(token => {
           return new Promise((resolve, reject) => {
 
-            let uuid = uuidGenerator().replace('-', '');
+            let uuid = generateUuid().replace(/-/g, '');
             let timestamp = new Date().toISOString();
 
             let headers = {
