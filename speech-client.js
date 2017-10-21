@@ -40,7 +40,7 @@ const buildAudioMessage = function(content) {
   let headersDataView = new DataView(buffer, 2, headersArray.length);
   let contentDataView = new DataView(buffer,
     2 + headersArray.length,
-    riff.length);
+    content.length);
 
   sizeDataView.setUint16(0, headersArray.length);
 
@@ -48,8 +48,8 @@ const buildAudioMessage = function(content) {
     headersDataView.setUint8(i, headersArray[i]);
   }
 
-  for(let i = 0; i < riff.length; i++) {
-    contentDataView.setUint8(i, riff[i]);
+  for(let i = 0; i < content.length; i++) {
+    contentDataView.setUint8(i, content[i]);
   }
 
   return buffer;
@@ -161,7 +161,7 @@ module.exports = class SpeechToTextClient {
   }
 
   send(buffer) {
-    console.log(buffer.prototype.toString())
+
     this.wsc.send(buildAudioMessage(buffer));
   }
 
