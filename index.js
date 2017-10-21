@@ -20,7 +20,7 @@ app.get("/ncco", function(req, res, next) {
   res.sendFile(__dirname + "/ncco.json");
 });
 
-app.ws('/connect', async function(ws, req) {
+async function connect(ws, req) {
   console.log("phone call connected to us");
   const client = new SpeechToTextClient(process.env.SPEECH_KEY);
   await client.connect();
@@ -33,7 +33,9 @@ app.ws('/connect', async function(ws, req) {
     }
   })
   ws.on('close', () => client.close());
-});
+}
+
+app.ws('/connect', connect);
 
 app.listen(app.get('port'), function() {
   console.log('Node app is running on port', app.get('port'));
