@@ -18,12 +18,12 @@ module.exports = class SpeechToTextClient {
     }
 
     return new Promise((resolve, reject) => {
-      request.post(options, (error, response, body) => {
+      request.post(options, (error, res, body) => {
         if (error) {
           return reject(error);
         }
 
-        if (response.statusCode !== 200) {
+        if (res.statusCode !== 200) {
           return reject(new Error(`request failed for speech client with status code ${res.statusCode}.`));
         }
 
