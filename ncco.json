@@ -6,13 +6,13 @@
   {
     "action":"connect",
     "eventUrl":[
-      "https://aqueous-depths-55654.herokuapp.com/events"
+      "https://emotional-callcentre.herokuapp.com/events"
     ],
     "from":"447700900000",
     "endpoint":[
       {
         "type":"websocket",
-        "uri":"ws://aqueous-depths-55654.herokuapp.com/connect",
+        "uri":"ws://emotionalcallcentre.herokuapp.com/connect",
         "content-type":"audio/l16;rate=16000",
         "headers":{
           "whatever":"metadata_you_want"
