@@ -7,8 +7,8 @@ module.exports = class SpeechToTextClient {
   constructor(key) {
     this.key = key;
     this.TOKEN_ENDPOINT = 'https://api.cognitive.microsoft.com/sts/v1.0/issueToken';
-    this.SPEECH_ENDPOINT = 'wss://speech.platform.bing.com/speech/recognition/dictation/cognitiveservices/v1';
     this.SPEECH_PATH = '/speech/recognition/dictation/cognitiveservices/v1';
+    this.SPEECH_ENDPOINT = 'wss://speech.platform.bing.com' + this.SPEECH_PATH;
   }
 
   renewToken() {
@@ -38,18 +38,22 @@ module.exports = class SpeechToTextClient {
     return this.renewToken()
         .then(token => {
           return new Promise((resolve, reject) => {
+
+            let uuid = uuid().replace('-', '');
+            let timestamp = new Date().toISOString();
+
             let headers = {
               'Authorization': "Bearer: " + token,
               'Path': this.SPEECH_PATH,
-              'X-RequestId': uuid().replace('-', ''),
-              'X-Timestamp': new Date().toISOString()
+              'X-RequestId': uuid,
+              'X-Timestamp': timestamp
             };
 
             let options = {
               headers: headers
             };
 
-            console.log('connecting to web socket');
+            console.log('connecting to web socket', options);
 
             this.wsc = new WebSocket(this.SPEECH_ENDPOINT, options);
 
