@@ -1,7 +1,7 @@
 const request = require('request');
 const WebSocket = require('ws');
 
-export class SpeechToTextClient {
+module.exports = class SpeechToTextClient {
 
   constructor(key) {
     this.key = key;

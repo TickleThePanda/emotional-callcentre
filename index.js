@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const expressWs = require('express-ws')(app);
-const SpeechToTextClient = require('/speech-client.js');
+const SpeechToTextClient = require('./speech-client.js');
 
 app.set('port', (process.env.PORT || 5000));
 
