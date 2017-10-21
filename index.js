@@ -21,10 +21,9 @@ app.get("/ncco", function(req, res, next) {
 app.ws('/connect', function(ws, req) {
   ws.on('message', function(msg) {
     console.log(msg);
-    console.log(typeof msg);
     if (msg instanceof String) {
       console.log(msg);
-    } else if(msg instanceof ArrayBuffer) {
+    } else if(msg instanceof Buffer) {
       console.log("Binary message recieved");
       ws.sendBytes(msg);
     }
