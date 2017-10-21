@@ -46,6 +46,7 @@ module.exports = class SpeechToTextClient {
         const ws = new WebSocket(this.SPEECH_ENDPOINT, options);
 
         ws.on('connection', ws => {
+          console.log('connected to microsoft')
           ws.on('message', console.log);
         });
       })
