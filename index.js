@@ -25,7 +25,7 @@ app.ws('/connect', function(ws, req) {
       console.log(msg);
     } else if(msg instanceof Buffer) {
       console.log("Binary message recieved");
-      ws.sendBytes(msg);
+      ws.send(msg);
     }
   });
 });
