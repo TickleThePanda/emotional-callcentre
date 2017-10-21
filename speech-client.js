@@ -52,12 +52,6 @@ const buildBinaryMessage = function(content) {
     contentDataView.setUint8(i, riff[i]);
   }
 
-  let dataView = new DataView(buffer);
-
-  for(let i = 0; i < dataView.byteLength; i++) {
-      console.log(dataView.getUint8(i));
-  }
-
   return buffer;
 }
 
@@ -142,7 +136,6 @@ module.exports = class SpeechToTextClient {
   }
 
   send(buffer) {
-    console.log('sending', buffer);
     this.wsc.send(buildBinaryMessage(buffer));
   }
 }
