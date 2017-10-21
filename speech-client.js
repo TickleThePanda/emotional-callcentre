@@ -56,28 +56,13 @@ module.exports = class SpeechToTextClient {
               let uuid = generateUuid().replace(/-/g, '');
               let timestamp = new Date().toISOString();
               console.log("opened web socket to client", args);
-              this.wsc.send("Path: speech.config\r\n"
-                  + "X-RequestId: " + uuid + "\r\n"
-                  + "X-Timestamp: " + timestamp + "\r\n"
-                  + "Content-Type: " + "application/json; charset=utf-8\r\n"
-                  + `{
-                    "context": {
-                      "system": {
-                        "version": "2.0.12341",
-                      },
-                      "os": {
-                        "platform": "N/A",
-                        "name": "N/A",
-                        "version": "N/A"
-                      },
-                      "device": {
-                        "manufacturer": "N/A",
-                        "model": "N/A",
-                        "version": "N/A"
-                        }
-                      },
-                    }
-                  }`, () => resolve);
+              const headerSepartor = "\r\n";
+              let header = "Path: speech.config" + headerSepartor
+              + "X-RequestId: " + uuid + headerSepartor
+              + "X-Timestamp: " + timestamp + headerSepartor
+              + "Content-Type: " + "application/json; charset=utf-8" + headerSepartor
+              + `{"context":{"system":{"version":"2.0.12341"},"os":{"platform":"N/A","name":"N/A","version":"N/A"},"device":{"manufacturer":"N/A","model":"N/A","version":"N/A"}}}`;
+              this.wsc.send(hea, () => resolve);
             });
             this.wsc.on('close', (...args) => console.log("closed with code", args));
 
