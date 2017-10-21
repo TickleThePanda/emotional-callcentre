@@ -35,8 +35,8 @@ module.exports = class SpeechToTextClient {
   recognise(stream) {
     this.renewToken()
       .then(token => {
-        let params = {
-          'Authorization': token
+        let headers = {
+          'Authorization': "Bearer: " + token
         };
 
         let options = {
