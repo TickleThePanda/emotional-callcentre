@@ -13,22 +13,23 @@ const createBaseHeader = function(path) {
   let timestamp = new Date().toISOString();
   let baseHeaders = "Path: " + path + headerSeparator
       + "X-RequestId: " + uuid + headerSeparator
-      + "X-Timestamp: " + timestamp + headerSeparator
-      + "Content-Type: " + "application/json; charset=utf-8" + headerSeparator;
+      + "X-Timestamp: " + timestamp + headerSeparator;
 
   return baseHeaders;
 }
 
 const buildFirstMessage = function() {
   let payload = createBaseHeader("speech.config")
+      + "Content-Type: " + "application/json; charset=utf-8" + headerSeparator;
       + headerSeparator
       + `{"context":{"system":{"version":"2.0.12341"},"os":{"platform":"N/A","name":"N/A","version":"N/A"},"device":{"manufacturer":"N/A","model":"N/A","version":"N/A"}}}`;
 
   return payload;
 }
 
-const buildBinaryMessage = function(content) {
-  let headers = createBaseHeader("audio");
+const buildAudioMessage = function(content) {
+  let headers = createBaseHeader("audio")
+      + 'Content-Type: audio/x-wav' + headerSeparator;
   
   let headersArray = new Buffer(headers);
 
@@ -54,7 +55,7 @@ const buildBinaryMessage = function(content) {
 }
 
 const buildRiffMessage = function() {
-  return buildBinaryMessage(riff);
+  return buildAudioMessage(riff);
 }
 
 module.exports = class SpeechToTextClient {
@@ -129,7 +130,7 @@ module.exports = class SpeechToTextClient {
   }
 
   send(buffer) {
-    this.wsc.send(buildBinaryMessage(buffer));
+    this.wsc.send(buildAudioMessage(buffer));
   }
 
   close() {
