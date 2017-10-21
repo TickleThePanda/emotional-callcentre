@@ -123,7 +123,12 @@ module.exports = class SpeechToTextClient {
 
             this.wsc.on('close', (...args) => console.log("closed with code", args));
 
-            this.wsc.on('message', (...args) => console.log("message: ", args));
+            this.wsc.on('message', (...args) => {
+              let message = args[0];
+              if(message.indexOf("turn.phase") >= 0) {
+                console.log("message: ", args);
+              }
+            });
           });
         })
         .catch(e => {
