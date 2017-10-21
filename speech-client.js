@@ -57,12 +57,12 @@ module.exports = class SpeechToTextClient {
               let timestamp = new Date().toISOString();
               console.log("opened web socket to client", args);
               const headerSepartor = "\r\n";
-              let header = "Path: speech.config" + headerSepartor
+              let payload = "Path: speech.config" + headerSepartor
               + "X-RequestId: " + uuid + headerSepartor
               + "X-Timestamp: " + timestamp + headerSepartor
               + "Content-Type: " + "application/json; charset=utf-8" + headerSepartor
               + `{"context":{"system":{"version":"2.0.12341"},"os":{"platform":"N/A","name":"N/A","version":"N/A"},"device":{"manufacturer":"N/A","model":"N/A","version":"N/A"}}}`;
-              this.wsc.send(hea, () => resolve);
+              this.wsc.send(payload, () => resolve);
             });
             this.wsc.on('close', (...args) => console.log("closed with code", args));
 
