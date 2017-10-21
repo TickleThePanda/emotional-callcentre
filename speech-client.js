@@ -8,6 +8,8 @@ const headerSeparator = "\r\n";
 
 const riff = fs.readFile(__dirname + "/riff.wav")
 
+console.log(riff);
+
 const createBaseHeader = function(path) {
   let uuid = generateUuid().replace(/-/g, '');
   let timestamp = new Date().toISOString();
