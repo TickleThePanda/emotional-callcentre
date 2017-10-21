@@ -20,6 +20,7 @@ app.get("/ncco", function(req, res, next) {
 
 app.ws('/connect', function(ws, req) {
   ws.on('message', function(msg) {
+    console.log(msg);
     if (msg.type === 'utf8') {
       console.log(msg.utf8Data);
     } else if(msg.type === 'binary') {
