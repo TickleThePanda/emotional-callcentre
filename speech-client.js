@@ -29,9 +29,9 @@ const buildFirstMessage = function() {
   return payload;
 }
 
-const buildRiffMessage = function() {
+const buildBinaryMessage = function(content) {
   let headers = createBaseHeader("audio");
-
+  
   let headersArray = new Buffer(headers);
 
   let buffer = new ArrayBuffer(2 + headersArray.length + riff.length);
@@ -61,10 +61,10 @@ const buildRiffMessage = function() {
   return buffer;
 }
 
-const buildBinaryMessage = function(content) {
-  let headers = createBaseHeader("audio");
-
+const buildRiffMessage = function() {
+  return buildBinaryMessage(riff);
 }
+
 
 module.exports = class SpeechToTextClient {
 
@@ -124,7 +124,7 @@ module.exports = class SpeechToTextClient {
 
               this.wsc.send(payload);
 
-              this.wsc.send(buildRiffMessage(), () => resolve)
+              this.wsc.send(buildRiffMessage(), {}, () => resolve)
             });
 
             this.wsc.on('close', (...args) => console.log("closed with code", args));
@@ -143,6 +143,6 @@ module.exports = class SpeechToTextClient {
 
   send(buffer) {
     console.log('sending', buffer);
-    this.wsc.send(buffer);
+    this.wsc.send(buildBinaryMessage(buffer));
   }
 }
