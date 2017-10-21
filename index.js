@@ -5,12 +5,12 @@ var expressWs = require('express-ws')(app);
 app.set('port', (process.env.PORT || 5000));
 
 app.get('/', function(req, res, next) {
-  console.log(req.body);
+  console.log("webhook get:", req.body);
   res.status(200).send();
 });
 
 app.post('/', function(req, res, next) {
-  console.log(req.body);
+  console.log("webhook post:", req.body);
   res.status(200).send();
 });
 
