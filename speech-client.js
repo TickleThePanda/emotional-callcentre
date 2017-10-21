@@ -66,6 +66,7 @@ const fromRawToMessage = function(raw) {
       .reduce((map, obj) => {
         let headerSplit = obj.split(":");
         map[headerSplit[0].trim()] = headerSplit[1].trim();
+        return map;
       }, {});
   let payload = JSON.parse(payloadAsText);
 
