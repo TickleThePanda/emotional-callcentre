@@ -7,8 +7,6 @@ module.exports = class SpeechToTextClient {
     this.key = key;
     this.TOKEN_ENDPOINT = 'https://api.cognitive.microsoft.com/sts/v1.0/issueToken';
     this.SPEECH_ENDPOINT = 'wss://speech.platform.bing.com/speech/recognition/dictation/cognitiveservices/v1';
-
-    this.connect();
   }
 
   renewToken() {
@@ -35,7 +33,7 @@ module.exports = class SpeechToTextClient {
   }
 
   connect() {
-    this.renewToken()
+    return this.renewToken()
       .then(token => {
         let headers = {
           'Authorization': "Bearer: " + token
