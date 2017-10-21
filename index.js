@@ -22,11 +22,11 @@ app.ws('/connect', function(ws, req) {
   ws.on('message', function(msg) {
     console.log(msg);
     console.log(typeof msg);
-    if (msg.type === 'utf8') {
-      console.log(msg.utf8Data);
-    } else if(msg.type === 'binary') {
+    if (msg instanceof String) {
+      console.log(msg);
+    } else if(msg instanceof ArrayBuffer) {
       console.log("Binary message recieved");
-      ws.sendBytes(msg.binaryData);
+      ws.sendBytes(msg);
     }
   });
 });
