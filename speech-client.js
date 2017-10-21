@@ -54,7 +54,7 @@ module.exports = class SpeechToTextClient {
       })
       .catch(e => {
         console.log("couldn't connect to service", e);
-      });;
+      });
   }
 
   close() {
