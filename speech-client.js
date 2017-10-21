@@ -43,14 +43,11 @@ module.exports = class SpeechToTextClient {
           headers: headers
         };
 
-        const ws = new WebSocket(this.SPEECH_ENDPOINT, options);
+        const wsc = new WebSocket(this.SPEECH_ENDPOINT, options);
 
-        ws.on('open', ws => {
-          console.log('connected to microsoft')
-          ws.on('message', console.log);
-        });
+        wsc.on('open', console.log);
 
-        ws.on('')
+        wsc.on('message', console.log);
       })
       .catch(e => {
         console.log("couldn't connect to service", e);
