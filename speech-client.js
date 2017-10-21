@@ -135,6 +135,10 @@ module.exports = class SpeechToTextClient {
   }
 
   close() {
-    this.wsc.terminate();
+    try {
+      this.wsc.terminate();
+    } catch (e) {
+      console.log(e);
+    }
   }
 }
