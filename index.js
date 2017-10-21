@@ -17,4 +17,4 @@ app.ws('/connect', function(ws, req) {
   });
 });
 
-app.listen();
+app.listen(3000);
