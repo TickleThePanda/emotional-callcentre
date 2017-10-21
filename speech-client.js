@@ -1,82 +1,11 @@
 const request = require('request');
 const WebSocket = require('ws');
-const generateUuid = require('uuid/v4');
 
-const fs = require('fs');
+const RawRequestBuilder = require('./raw-request-builder.js');
+const RawRequestConverter = require('./raw-request-converter.js');
 
-const headerSeparator = "\r\n";
-
-const riff = fs.readFileSync(__dirname + "/riff.wav");
-
-const requestId = generateUuid().replace(/-/g, '');
-
-const createBaseHeader = function(path, type) {
-  let uuid = requestId;
-  let timestamp = new Date().toISOString();
-  let baseHeaders = "Path: " + path + headerSeparator
-      + "X-RequestId: " + uuid + headerSeparator
-      + "X-Timestamp: " + timestamp + headerSeparator
-      + "Content-Type: " + type + headerSeparator;
-
-  return baseHeaders;
-}
-
-const buildFirstMessage = function() {
-  let payload = createBaseHeader("speech.config", "application/json; charset=utf-8")
-      + headerSeparator
-      + `{"context":{"system":{"version":"2.0.12341"},"os":{"platform":"N/A","name":"N/A","version":"N/A"},"device":{"manufacturer":"N/A","model":"N/A","version":"N/A"}}}`;
-
-  return payload;
-}
-
-const buildAudioMessage = function(content) {
-  let headers = createBaseHeader("audio", "audio/x-wav");
-  
-  let headersArray = new Buffer(headers);
-
-  let buffer = new ArrayBuffer(2 + headersArray.length + content.length);
-
-  let sizeDataView = new DataView(buffer, 0, 2);
-  let headersDataView = new DataView(buffer, 2, headersArray.length);
-  let contentDataView = new DataView(buffer,
-    2 + headersArray.length,
-    content.length);
-
-  sizeDataView.setUint16(0, headersArray.length);
-
-  for(let i = 0; i < headersArray.length; i++) {
-    headersDataView.setUint8(i, headersArray[i]);
-  }
-
-  for(let i = 0; i < content.length; i++) {
-    contentDataView.setUint8(i, content[i]);
-  }
-
-  return buffer;
-}
-
-const buildRiffMessage = function() {
-  return buildAudioMessage(riff);
-}
-
-const fromRawToMessage = function(raw) {
-  let split = raw.split(headerSeparator + headerSeparator);
-  let headersAsText = split[0];
-  let payloadAsText = split[1];
-  let headers = headersAsText
-      .split(headerSeparator)
-      .reduce((map, obj) => {
-        let headerSplit = obj.split(":");
-        map[headerSplit[0].trim()] = headerSplit[1].trim();
-        return map;
-      }, {});
-  let payload = JSON.parse(payloadAsText);
-
-  return {
-    headers,
-    payload
-  };
-}
+const builder = new RawRequestBuilder();
+const converter = new RawRequestConverter();
 
 module.exports = class SpeechToTextClient {
 
@@ -129,16 +58,16 @@ module.exports = class SpeechToTextClient {
           this.wsc.on('open', (...args) => {
             console.log("opened web socket to client", args);
 
-            this.wsc.send(buildFirstMessage());
+            this.wsc.send(builder.buildFirstMessage());
 
-            this.wsc.send(buildRiffMessage(), () => this.ready = true);
+            this.wsc.send(builder.buildRiffMessage(), () => this.ready = true);
 
           });
 
           this.wsc.on('close', (...args) => console.log("closed with code", args));
 
           this.wsc.on('message', (raw) => {
-            let message = fromRawToMessage(raw);
+            let message = converter.convert(raw);
             let type = message.headers["Path"];
             if(this.listeners['message']) {
               this.listeners['message'].forEach(f => f(message));
@@ -162,7 +91,7 @@ module.exports = class SpeechToTextClient {
 
   send(buffer) {
 
-    this.wsc.send(buildAudioMessage(buffer));
+    this.wsc.send(builder.buildAudioMessage(buffer));
   }
 
   close() {
