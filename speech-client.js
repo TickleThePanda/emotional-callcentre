@@ -161,6 +161,7 @@ module.exports = class SpeechToTextClient {
   }
 
   send(buffer) {
+    console.log(buffer.prototype.toString())
     this.wsc.send(buildAudioMessage(buffer));
   }
 
