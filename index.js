@@ -33,7 +33,6 @@ app.ws('/connect', function(ws, req) {
       }
     })
   );
-ws.on('close', () => client.close());
 });
 
 app.listen(app.get('port'), function() {
