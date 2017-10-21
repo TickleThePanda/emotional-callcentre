@@ -43,7 +43,7 @@ module.exports = class SpeechToTextClient {
             let timestamp = new Date().toISOString();
 
             let headers = {
-              'Authorization': "Bearer: " + token,
+              'Authorization': "Bearer " + token,
               'Path': this.SPEECH_PATH,
               'X-RequestId': uuid,
               'X-Timestamp': timestamp
