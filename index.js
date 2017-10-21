@@ -6,7 +6,7 @@ app.set('port', (process.env.PORT || 5000));
 
 app.get('/', function(req, res, next) {
   console.log("webhook get:", req.body);
-  res.status(200).send();
+  res.status(200).send({ answer_url: "/ncco" });
 });
 
 app.post('/', function(req, res, next) {
