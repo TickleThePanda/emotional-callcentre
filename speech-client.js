@@ -50,7 +50,7 @@ const buildRiffMessage = function() {
 
   let dataView = new DataView(buffer);
 
-  for(let i = 0; i < dataView.byteLength / 8; i+=8) {
+  for(let i = 0; i < dataView.byteLength / 8; i++) {
       console.log(dataView.getUint8(i));
   }
 
