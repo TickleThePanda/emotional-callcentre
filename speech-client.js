@@ -8,19 +8,19 @@ const headerSeparator = "\r\n";
 
 const riff = fs.readFileSync(__dirname + "/riff.wav");
 
-const createBaseHeader = function(path) {
+const createBaseHeader = function(path, type) {
   let uuid = generateUuid().replace(/-/g, '');
   let timestamp = new Date().toISOString();
   let baseHeaders = "Path: " + path + headerSeparator
       + "X-RequestId: " + uuid + headerSeparator
-      + "X-Timestamp: " + timestamp + headerSeparator;
+      + "X-Timestamp: " + timestamp + headerSeparator
+      + "Content-Type: " + type + headerSeparator;
 
   return baseHeaders;
 }
 
 const buildFirstMessage = function() {
-  let payload = createBaseHeader("speech.config")
-      + "Content-Type: " + "application/json; charset=utf-8" + headerSeparator;
+  let payload = createBaseHeader("speech.config", "application/json; charset=utf-8")
       + headerSeparator
       + `{"context":{"system":{"version":"2.0.12341"},"os":{"platform":"N/A","name":"N/A","version":"N/A"},"device":{"manufacturer":"N/A","model":"N/A","version":"N/A"}}}`;
 
@@ -28,8 +28,7 @@ const buildFirstMessage = function() {
 }
 
 const buildAudioMessage = function(content) {
-  let headers = createBaseHeader("audio")
-      + 'Content-Type: audio/x-wav' + headerSeparator;
+  let headers = createBaseHeader("audio", "audio/x-wav");
   
   let headersArray = new Buffer(headers);
 
