@@ -24,6 +24,8 @@ app.ws('/connect', function(ws, req) {
   console.log("phone call connected to us");
   const client = new SpeechToTextClient(process.env.SPEECH_KEY);
   client.connect().then(() => {
+    client.on('message', console.log);
+
     ws.on('message', function(msg) {
       if (msg instanceof String) {
         console.log(msg);
@@ -31,7 +33,7 @@ app.ws('/connect', function(ws, req) {
         ws.send(msg);
         client.send(msg);
       }
-    })
+    });
     ws.on('close', client.close);
   });
 });

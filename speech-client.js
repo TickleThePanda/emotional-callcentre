@@ -138,7 +138,14 @@ module.exports = class SpeechToTextClient {
             this.wsc.on('close', (...args) => console.log("closed with code", args));
 
             this.wsc.on('message', (raw) => {
-              console.log(fromRawToMessage(raw));
+              let message = fromRawToMessage(raw);
+              let type = message.headers["Path"];
+              if(this.listeners['message']) {
+                this.listeners['message'].forEach(f => f(message));
+              }
+              if(this.listeners[type]) {
+                this.listeners[type].forEach(f => f(message));
+              }
             });
           });
         })
