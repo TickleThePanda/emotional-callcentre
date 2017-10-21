@@ -2,8 +2,49 @@ const request = require('request');
 const WebSocket = require('ws');
 const generateUuid = require('uuid/v4');
 
-
 const headerSeparator = "\r\n";
+
+const createBaseHeader = function(path) {
+  let uuid = generateUuid().replace(/-/g, '');
+  let timestamp = new Date().toISOString();
+  let baseHeaders = "Path: " + path + headerSeparator
+      + "X-RequestId: " + uuid + headerSeparator
+      + "X-Timestamp: " + timestamp + headerSeparator
+      + "Content-Type: " + "application/json; charset=utf-8" + headerSeparator;
+
+  return baseHeaders;
+}
+
+const buildFirstMessage = function() {
+  let payload = createBaseHeader("speech.config")
+      + headerSeparator
+      + `{"context":{"system":{"version":"2.0.12341"},"os":{"platform":"N/A","name":"N/A","version":"N/A"},"device":{"manufacturer":"N/A","model":"N/A","version":"N/A"}}}`;
+
+  return payload;
+}
+
+const buildRiffMessage = function() {
+  let headers = createBaseHeader("audio");
+  let riff = "RIFF$   WAVEfmt      D¬  ˆX   data    ";
+
+  let sizeArray = UInt8Array.of([headers.length]);
+  let headersArray = new TextEncoder("us-ascii").encode(headers);
+  let riffArray = new TextEncoder("us-ascii").encode(riff);
+
+  let payload = new UInt8Array(2 + headersArray.length + riffArray.length);
+
+
+  payload.set(size);
+  payload.set(headersArray, 2);
+  payload.set(riffArray, 2 + headersArray.length);
+
+  return payload;
+}
+
+const buildBinaryMessage = function(content) {
+  let headers = createBaseHeader("audio");
+
+}
 
 module.exports = class SpeechToTextClient {
 
@@ -42,7 +83,6 @@ module.exports = class SpeechToTextClient {
         .then(token => {
           return new Promise((resolve, reject) => {
 
-
             let headers = {
               'Authorization': token
             };
@@ -57,18 +97,16 @@ module.exports = class SpeechToTextClient {
 
             this.wsc.on('open', (...args) => {
               console.log("opened web socket to client", args);
-              let uuid = generateUuid().replace(/-/g, '');
-              let timestamp = new Date().toISOString();
-              let payload = "Path: speech.config" + headerSeparator
-              + "X-RequestId: " + uuid + headerSeparator
-              + "X-Timestamp: " + timestamp + headerSeparator
-              + "Content-Type: " + "application/json; charset=utf-8" + headerSeparator
-              + headerSeparator
-              + `{"context":{"system":{"version":"2.0.12341"},"os":{"platform":"N/A","name":"N/A","version":"N/A"},"device":{"manufacturer":"N/A","model":"N/A","version":"N/A"}}}`;
+
+              let payload = buildFirstMessage();
 
               console.log('sending speech.config payload', payload);
-              this.wsc.send(payload, () => resolve);
+
+              this.wsc.send(payload);
+
+              this.wsc.send(buildRiffHeader(), () => resolve)
             });
+
             this.wsc.on('close', (...args) => console.log("closed with code", args));
 
             this.wsc.on('message', (...args) => console.log("message: ", args));
