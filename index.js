@@ -3,8 +3,9 @@ const app = express();
 const expressWs = require('express-ws')(app);
 const SpeechToTextClient = require('./speech-client.js');
 
-app.set('port', (process.env.PORT || 5000));
+const RequestGenerator = require('./request-generator.js');
 
+app.set('port', (process.env.PORT || 5000));
 
 app.get('/', function(req, res, next) {
   console.log("webhook get:", req.body);
@@ -22,14 +23,15 @@ app.get("/ncco", function(req, res, next) {
 
 app.ws('/connect', function(ws, req) {
   console.log("phone call connected to us");
-  const client = new SpeechToTextClient(process.env.SPEECH_KEY);
+  const generator = new RequestGenerator();
+  const client = new SpeechToTextClient(process.env.SPEECH_KEY, generator);
   client.connect();
 
   client.on('message', m => {
     console.log(m);
   });
 
-  let bufferedItems = [];
+  let missedMessages = [];
 
   ws.on('message', function(msg) {
     if (msg instanceof String) {
@@ -37,12 +39,12 @@ app.ws('/connect', function(ws, req) {
     } else if(msg instanceof Buffer) {
       ws.send(msg);
       if(!client.ready) {
-        bufferedItems.push(msg);
+        missedMessages.push(generator.generateAudioRequest(msg));
       } else {
-        while(bufferedItems.length) {
-          client.send(bufferedItems.shift());
+        while(missedMessages.length) {
+          client.sendMessage(missedMessages.shift());
         }
-        client.send(msg);
+        client.sendMessage(generator.generateAudioRequest(msg));
       }
     }
   });

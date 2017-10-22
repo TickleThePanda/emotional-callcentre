@@ -1,4 +1,5 @@
 const CONST = require('./request-constants.js');
+const RequestMessage = require('./request-message.js');
 
 module.exports = class RawRequestConverter {
   convert(raw) {
@@ -14,9 +15,6 @@ module.exports = class RawRequestConverter {
         }, {});
     let payload = JSON.parse(payloadAsText);
 
-    return {
-      headers,
-      payload
-    };
+    return new RequestMessage(headers, payload);
   }
 }

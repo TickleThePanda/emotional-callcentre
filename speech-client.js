@@ -3,17 +3,20 @@ const WebSocket = require('ws');
 
 const RawRequestBuilder = require('./raw-request-builder.js');
 const RawRequestConverter = require('./raw-request-converter.js');
+const RequestGenerator = require('./request-generator.js');
 
 const builder = new RawRequestBuilder();
 const converter = new RawRequestConverter();
 
 module.exports = class SpeechToTextClient {
 
-  constructor(key) {
+  constructor(key, generator) {
     this.key = key;
+    this.generator = generator;
     this.listeners = {};
     this.TOKEN_ENDPOINT = 'https://api.cognitive.microsoft.com/sts/v1.0/issueToken';
-    this.SPEECH_PATH = '/speech/recognition/interactive/cognitiveservices/v1';
+    this.TYPE = 'conversation'
+    this.SPEECH_PATH = '/speech/recognition/' + this.TYPE + '/cognitiveservices/v1';
     this.SPEECH_ENDPOINT = 'wss://speech.platform.bing.com' + this.SPEECH_PATH + '?language=en-US';
   }
 
@@ -58,9 +61,10 @@ module.exports = class SpeechToTextClient {
           this.wsc.on('open', (...args) => {
             console.log("opened web socket to client", args);
 
-            this.wsc.send(builder.buildFirstMessage());
-
-            this.wsc.send(builder.buildRiffMessage(), () => this.ready = true);
+            this.sendMessage(this.generator.generateSetupRequest());
+            this.sendMessage(this.generator.generateRiffRequest(), () => {
+              this.ready = true;
+            });
 
           });
 
@@ -89,9 +93,8 @@ module.exports = class SpeechToTextClient {
     this.listeners[type].push(f);
   }
 
-  send(buffer) {
-
-    this.wsc.send(builder.buildAudioMessage(buffer));
+  sendMessage(message, callback) {
+    this.wsc.send(builder.buildMessage(message), callback);
   }
 
   close() {

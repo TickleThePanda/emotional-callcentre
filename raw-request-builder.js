@@ -1,42 +1,21 @@
 const CONST = require('./request-constants.js');
 
-const generateUuid = require('uuid/v4');
-const requestId = generateUuid().replace(/-/g, '');
-
-
 module.exports = class RawMessageBuilder {
-  
-    createBaseHeader(path, type) {
-      let uuid = requestId;
-      let timestamp = new Date().toISOString();
-      let baseHeaders = "Path: " + path + CONST.HEADER_SEPARATOR
-          + "X-RequestId: " + uuid + CONST.HEADER_SEPARATOR
-          + "X-Timestamp: " + timestamp + CONST.HEADER_SEPARATOR
-          + "Content-Type: " + type + CONST.HEADER_SEPARATOR;
-    
-      return baseHeaders;
+
+    buildTextRequest(headersText, payload) {
+      return headersText + CONST.HEADER_SEPARATOR + payload;
     }
-  
-    buildFirstMessage() {
-      let payload = this.createBaseHeader("speech.config", "application/json; charset=utf-8")
-          + CONST.HEADER_SEPARATOR
-          + `{"context":{"system":{"version":"2.0.12341"},"os":{"platform":"N/A","name":"N/A","version":"N/A"},"device":{"manufacturer":"N/A","model":"N/A","version":"N/A"}}}`;
+
+    buildBinaryRequest(headersText, payload) {
+      let headersArray = new Buffer(headersText);
     
-      return payload;
-    }
-  
-    buildAudioMessage(content) {
-      let headers = this.createBaseHeader("audio", "audio/x-wav");
-      
-      let headersArray = new Buffer(headers);
-    
-      let buffer = new ArrayBuffer(2 + headersArray.length + content.length);
+      let buffer = new ArrayBuffer(2 + headersArray.length + payload.length);
     
       let sizeDataView = new DataView(buffer, 0, 2);
       let headersDataView = new DataView(buffer, 2, headersArray.length);
       let contentDataView = new DataView(buffer,
         2 + headersArray.length,
-        content.length);
+        payload.length);
     
       sizeDataView.setUint16(0, headersArray.length);
     
@@ -44,15 +23,32 @@ module.exports = class RawMessageBuilder {
         headersDataView.setUint8(i, headersArray[i]);
       }
     
-      for(let i = 0; i < content.length; i++) {
-        contentDataView.setUint8(i, content[i]);
+      for(let i = 0; i < payload.length; i++) {
+        contentDataView.setUint8(i, payload[i]);
       }
     
       return buffer;
     }
-  
-    buildRiffMessage() {
-      return this.buildAudioMessage(CONST.RIFF);
+
+    buildHeaders(headers) {
+      return Object.keys(headers)
+        .map(k => k + ": " + headers[k])
+        .reduce((map, obj) => {
+          map += obj + CONST.HEADER_SEPARATOR;
+          return map;
+        }, "");
+    }
+
+    buildMessage(message) {
+
+      const headerText = this.buildHeaders(message.headers);
+
+      if(message.type === "binary") {
+        return this.buildBinaryRequest(headerText, message.payload);
+      } else {
+        return this.buildTextRequest(headerText, message.payload);
+      }
+
     }
   
   }
