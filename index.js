@@ -1,7 +1,10 @@
 const express = require('express');
 const app = express();
 const expressWs = require('express-ws')(app);
+
 const SpeechToTextClient = require('./speech-client.js');
+
+const request = require('request');
 
 app.set('port', (process.env.PORT || 5000));
 
@@ -34,6 +37,40 @@ const convert = function(message) {
   }
 }
 
+const doAnalysis = function(text) {
+  return new Promise((resolve, reject) => {
+    let headers = {
+      'Ocp-Apim-Subscription-Key': process.env.MICROSOFT_TEXT_ANALYTICS_KEY,
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    }
+
+    let options = {
+      url: 'https://westeurope.api.cognitive.microsoft.com/text/analytics/v2.0/sentiment',
+      headers: headers,
+      json: true,
+      body: {
+        documents: [
+          {
+            language: 'en',
+            id: 1,
+            text: text
+          }
+        ]
+      }
+    }
+
+    request.post(options, (error, response, body) => {
+      console.log(body);
+      let score = body.documents[0].score;
+      resolve({
+        text: text,
+        score: score
+      });
+    })
+  });
+}
+
 app.ws('/connect', function(ws, req) {
   console.log("phone call connected to us");
   const client = new SpeechToTextClient(process.env.WATSON_USERNAME, process.env.WATSON_PASSWORD);
@@ -43,7 +80,7 @@ app.ws('/connect', function(ws, req) {
       let text = convert(m);
       if (text) {
         history += text.trim() + ". ";
-        console.log(history);
+        doAnalysis(history).then(t => console.log);
       }
     });
   
