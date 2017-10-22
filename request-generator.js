@@ -7,6 +7,7 @@ module.exports = class RequestGenerator {
 
   constructor() {
     this.requestId = generateUuid().replace(/-/g, '');
+    console.log("starting request" + this.requestId);
   }
 
   generateBaseRequest(path, payload) {
