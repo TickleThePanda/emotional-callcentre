@@ -22,6 +22,10 @@ app.get("/ncco", function(req, res, next) {
   res.sendFile(__dirname + "/ncco.json");
 });
 
+app.get("/index.html", function(req, res, next) {
+  res.sendFile(__dirname + "/index.html");
+})
+
 const convert = function(message) {
   if(message.results) {
     let result = message.results[0];
@@ -71,6 +75,8 @@ const doAnalysis = function(text) {
   });
 }
 
+const listeners = [];
+
 app.ws('/connect', function(ws, req) {
   console.log("phone call connected to us");
   const client = new SpeechToTextClient(process.env.WATSON_USERNAME, process.env.WATSON_PASSWORD);
@@ -80,7 +86,9 @@ app.ws('/connect', function(ws, req) {
       let text = convert(m);
       if (text) {
         history += text.trim() + ". ";
-        doAnalysis(history).then(t => console.log);
+        doAnalysis(history).then(t => {
+          listeners.forEach(f => f(t));
+        }).catch(console.log);
       }
     });
   
@@ -94,8 +102,17 @@ app.ws('/connect', function(ws, req) {
 
     ws.on('close', client.close);
   });;
+});
 
+app.ws('/browser', function(ws, req) {
+  let listener = t => {
+    ws.send(JSON.stringify(t));
+  };
 
+  listeners.push(listener);
+  ws.on('close', () => {
+    delete listeners[listeners.indexOf(listener)];
+  });
 });
 
 app.listen(app.get('port'), function() {
