@@ -25,21 +25,23 @@ app.ws('/connect', function(ws, req) {
   console.log("phone call connected to us");
   const generator = new RequestGenerator();
   const client = new SpeechToTextClient(process.env.SPEECH_KEY, generator);
-  client.connect();
+  client.connect().then(() => {
+    client.on('message', m => {
+      console.log(m);
+    });
+  
+    ws.on('message', function(msg) {
+      if (msg instanceof String) {
+        console.log("recieved text from", msg);
+      } else if(msg instanceof Buffer) {
+        ws.send(msg);
+        client.sendMessage(generator.generateAudioRequest(msg));
+      }
+    });
+    
+    ws.on('close', client.close);
+  });;
 
-  client.on('message', m => {
-    console.log(m);
-  });
-
-  ws.on('message', function(msg) {
-    if (msg instanceof String) {
-      console.log("recieved text from", msg);
-    } else if(msg instanceof Buffer) {
-      ws.send(msg);
-      client.sendMessage(generator.generateAudioRequest(msg));
-    }
-  });
-  ws.on('close', client.close);
 
 });
 

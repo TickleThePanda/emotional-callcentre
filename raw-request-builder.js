@@ -24,7 +24,7 @@ module.exports = class RawMessageBuilder {
       }
     
       for(let i = 0; i < payload.length; i++) {
-        contentDataView.setUint8(i, payload[i]);
+        contentDataView.setInt8(i, payload[i]);
       }
     
       return buffer;
