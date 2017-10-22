@@ -1,6 +1,8 @@
 const request = require('request');
 const WebSocket = require('ws');
 
+const CONSTS = require('./request-constants.js');
+
 module.exports = class SpeechToTextClient {
 
   constructor(name, password) {
