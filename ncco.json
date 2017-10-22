@@ -13,10 +13,7 @@
       {
         "type":"websocket",
         "uri":"wss://emotional-callcentre.herokuapp.com/connect",
-        "content-type":"audio/l16;rate=16000",
-        "headers":{
-          "whatever":"metadata_you_want"
-        }
+        "content-type":"audio/l16;rate=16000"
       }
     ]
   }
