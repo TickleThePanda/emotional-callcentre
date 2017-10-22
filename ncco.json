@@ -6,13 +6,13 @@
   {
     "action":"connect",
     "eventUrl":[
-      "https://emotional-callcentre.herokuapp.com/events"
+      "https://emote.ticklethepanda.co.uk/events"
     ],
     "from":"442036178286",
     "endpoint":[
       {
         "type":"websocket",
-        "uri":"wss://emotional-callcentre.herokuapp.com/connect",
+        "uri":"wss://emote.ticklethepanda.co.uk/connect",
         "content-type":"audio/l16;rate=16000"
       }
     ]
