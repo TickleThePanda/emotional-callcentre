@@ -1,89 +1,50 @@
 const request = require('request');
 const WebSocket = require('ws');
 
-const RawRequestBuilder = require('./raw-request-builder.js');
-const RawRequestConverter = require('./raw-request-converter.js');
-const RequestGenerator = require('./request-generator.js');
-
-const builder = new RawRequestBuilder();
-const converter = new RawRequestConverter();
+const CONSTS = require('./request-constants.js');
 
 module.exports = class SpeechToTextClient {
 
-  constructor(key, generator) {
-    this.key = key;
-    this.generator = generator;
+  constructor(name, password) {
+    this.name = name;
+    this.password = password;
     this.listeners = {};
-    this.TOKEN_ENDPOINT = 'https://api.cognitive.microsoft.com/sts/v1.0/issueToken';
-    this.TYPE = 'interactive'
-    this.SPEECH_PATH = '/speech/recognition/' + this.TYPE + '/cognitiveservices/v1';
-    this.SPEECH_ENDPOINT = 'wss://speech.platform.bing.com' + this.SPEECH_PATH + '?language=en-US';
-  }
-
-  renewToken() {
-    let options = {
-      url: this.TOKEN_ENDPOINT,
-      headers: {
-        'Ocp-Apim-Subscription-Key': this.key
-      }
-    }
-
-    return new Promise((resolve, reject) => {
-      request.post(options, (error, res, body) => {
-        if (error) {
-          return reject(error);
-        }
-
-        if (res.statusCode !== 200) {
-          return reject(new Error(`request failed for speech client with status code ${res.statusCode}.`));
-        }
-
-        resolve(body);
-      });
-    });
+    this.URL = 'wss://stream.watsonplatform.net/speech-to-text/api/v1/recognize?model=en-GB_NarrowbandModel';
   }
 
   connect() {
-    return this.renewToken()
-        .then(token => {
-          return new Promise((resolve, reject) => {
-            let headers = {
-              'Authorization': token
-            };
+    return new Promise((resolve, reject) => {
+      let headers = {
+        "Authorization": 'Basic ' + new Buffer(this.name + ':' + this.password).toString('base64')
+      };
 
-            let options = {
-              headers: headers
-            };
+      let options = {
+        headers: headers
+      };
 
-            console.log('connecting to web socket', options);
+      console.log('connecting to web socket', options);
 
-            this.wsc = new WebSocket(this.SPEECH_ENDPOINT, options);
+      this.wsc = new WebSocket(this.URL, options);
 
-            this.wsc.on('open', (...args) => {
-              console.log("opened web socket to client", args);
+      this.wsc.on('open', (...args) => {
+        console.log("opened web socket to client", args);
 
-              this.sendMessage(this.generator.generateSetupRequest());
-              this.sendMessage(this.generator.generateRiffRequest(), () => resolve());
+        this.sendMessage('{"action":"start","content-type":"audio/l16;rate=16000", "interim_results": true}', resolve);
+      });
 
-            });
+      this.wsc.on('close', (...args) => console.log("closed with code", args));
 
-            this.wsc.on('close', (...args) => console.log("closed with code", args));
-
-            this.wsc.on('message', (raw) => {
-              let message = converter.convert(raw);
-              let type = message.headers["Path"];
-              if(this.listeners['message']) {
-                this.listeners['message'].forEach(f => f(message));
-              }
-              if(this.listeners[type]) {
-                this.listeners[type].forEach(f => f(message));
-              }
-            });
-          });
-        })
-        .catch(e => {
-          console.log("couldn't connect to service", e);
-        });
+      this.wsc.on('message', (raw) => {
+        console.log(raw);
+        let message = JSON.parse(raw);
+        if(this.listeners['message']) {
+          this.listeners['message'].forEach(f => f(message));
+        }
+        if(this.listeners[message.type]) {
+          this.listeners[message.type].forEach(f => f(message));
+        }
+      });
+    });
   }
 
   on(type, f) {
@@ -94,7 +55,7 @@ module.exports = class SpeechToTextClient {
   }
 
   sendMessage(message, callback) {
-    this.wsc.send(builder.buildMessage(message), callback);
+    this.wsc.send(message, callback);
   }
 
   close() {
