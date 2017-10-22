@@ -7,7 +7,7 @@ module.exports = class RawMessageBuilder {
     }
 
     buildBinaryRequest(headersText, payload) {
-      let headersArray = new Buffer(headersText);
+      let headersArray = Buffer.from(headersText);
     
       let buffer = new ArrayBuffer(2 + headersArray.length + payload.length);
     
