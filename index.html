@@ -26,45 +26,57 @@
 
       #history-area {
         display: flex;
-        flex-direction: row;
-        justify-content: space-between;
+        flex-direction: column;
+        justify-content: space-around;
         align-items: center;
 
         flex-grow: 1;
       }
 
       #history-text {
-        font-size: 2rem;
+        font-size: 0.8rem;
       }
 
       #history-score {
-        font-size: 5rem;
-        margin-left: 1rem;
-        padding: 1rem;
+        font-size: 20vw;
+        padding: 5vw;
         line-height: 1;
+      }
+
+      #status-area {
+        font-size: 0.8rem;
+
+        position: fixed;
+        right: 2rem;
+        top: 2rem;
       }
     </style>
   </head>
   <body>
     <h1>Emotive Call-Centre</h1>
     <div id="history-area">
-      <div id="history-text"></div>
       <div id="history-score"></div>
+      <div id="history-text"></div>
     </div>
+    <div id="status-area"></div>
     <script>
       let ws = new WebSocket("wss://emotional-callcentre.herokuapp.com/browser");
+
       ws.onmessage = m => {
         let data = JSON.parse(m.data);
         console.log(data);
         let historyText = data.text;
         let historyScore = data.score
         window["history-text"].textContent = historyText;
-        window["history-score"].textContent = (historyScore * 100).toPrecision(2) + '%';
+        window["history-score"].textContent = (historyScore * 100).toFixed(0) + '%';
 
         let hue = 60 * historyScore + 10;
 
         window["history-score"].style.backgroundColor = `hsl(${hue}, 57%, 76%)`; 
+      };
 
+      ws.onclose = () => {
+        window["status-area"].textContent = "disconnected";
       };
     </script>
   </body>
