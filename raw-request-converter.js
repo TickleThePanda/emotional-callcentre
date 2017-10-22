@@ -15,6 +15,6 @@ module.exports = class RawRequestConverter {
         }, {});
     let payload = JSON.parse(payloadAsText);
 
-    return new RequestMessage(headers, payload);
+    return new RequestMessage(headers, 'text', payload);
   }
 }
