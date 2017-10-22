@@ -22,45 +22,20 @@ app.get("/", function(req, res, next) {
   res.sendFile(__dirname + "/index.html");
 })
 
-class History {
-
-  constructor() {
-    this.real = "";
-    this.temp = "";
-  }
-
-  convert(message) {
-    if(message.results) {
-      let result = message.results[0];
-      if(result.alternatives) {
-        let alternatives = result.alternatives;
-        if(alternatives[0]) {
-          let alternative = alternatives[0];
-          if(alternative) {
-            return {
-              transcript: alternative.transcript.trim(),
-              final: result.final
-            }
-          }
+const convert = function(message) {
+  if(message.results) {
+    let result = message.results[0];
+    if (result.final) {
+      let alternatives = result.alternatives;
+      if(alternatives[0]) {
+        let alternative = alternatives[0];
+        if(alternative) {
+          return alternative.transcript;
         }
       }
     }
-    return null;
   }
-
-  add(message) {
-    let data = this.convert(message);
-    if(data) {
-      if(data.final) {
-        this.real += data.transcript + ". ";
-      } else {
-        this.temp = this.real + data.transcript + ". "
-      }
-    }
-  }
-
 }
-
 
 const doAnalysis = function(text) {
   return new Promise((resolve, reject) => {
@@ -86,7 +61,7 @@ const doAnalysis = function(text) {
     }
 
     request.post(options, (error, response, body) => {
-      console.log("recieved information from microsoft");
+      console.log(body);
       let score = body.documents[0].score;
       resolve({
         text: text,
@@ -102,12 +77,13 @@ app.ws('/connect', function(ws, req) {
   console.log("phone call connected to us");
   const client = new SpeechToTextClient(process.env.WATSON_USERNAME, process.env.WATSON_PASSWORD);
   client.connect().then(() => {
-    let history = new History();
+    let history = "";
     client.on('message', m => {
-      history.add(m);
-      if(history.temp !== "") {
-        doAnalysis(history.temp).then(t => {
-          console.log("sending history to browser", history.temp);
+      let text = convert(m);
+      if (text) {
+        history += text.trim() + ". ";
+        doAnalysis(history).then(t => {
+          console.log("sending history to browser");
           listeners.forEach(f => f(t));
         }).catch(console.log);
       }
