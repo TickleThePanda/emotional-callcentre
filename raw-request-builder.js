@@ -25,8 +25,6 @@ module.exports = class RawMessageBuilder {
       for(let i = 0; i < payload.length; i++) {
         contentDataView.setUint8(i, payload[i]);
       }
-
-      console.log("sending ", Buffer.from(contentDataView.buffer).slice(-50));
     
       return buffer;
     }
