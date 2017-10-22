@@ -106,12 +106,16 @@ app.ws('/connect', function(ws, req) {
 });
 
 app.ws('/browser', function(ws, req) {
+
+  console.log('browser connected')
+
   let listener = t => {
     ws.send(JSON.stringify(t));
   };
 
   listeners.push(listener);
   ws.on('close', () => {
+    console.log('browser disconnected');
     delete listeners[listeners.indexOf(listener)];
   });
 });
