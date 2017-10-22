@@ -87,6 +87,7 @@ app.ws('/connect', function(ws, req) {
       if (text) {
         history += text.trim() + ". ";
         doAnalysis(history).then(t => {
+          console.log("sending history to browser");
           listeners.forEach(f => f(t));
         }).catch(console.log);
       }
@@ -100,7 +101,7 @@ app.ws('/connect', function(ws, req) {
       }
     });
 
-    ws.on('close', client.close);
+    ws.on('close', () => client.close());
   });;
 });
 

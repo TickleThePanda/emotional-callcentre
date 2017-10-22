@@ -35,7 +35,7 @@ module.exports = class SpeechToTextClient {
       this.wsc.on('close', (...args) => console.log("closed with code", args));
 
       this.wsc.on('message', (raw) => {
-        console.log(raw);
+        console.log('recieved message from watson');
         let message = JSON.parse(raw);
         if(this.listeners['message']) {
           this.listeners['message'].forEach(f => f(message));

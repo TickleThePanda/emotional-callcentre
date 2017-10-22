@@ -2,6 +2,47 @@
 <html>
   <head>
     <title>Emotive Call-Centre</title>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <style>
+      html, body {
+        font-family: "Open Sans", "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+        font-size: 16pt;
+      }
+
+      body {
+        margin: 2rem;
+        padding: 0;
+        height: calc(100vh - 4rem);
+
+        display: flex;
+        flex-direction: column;
+      }
+
+      h1 {
+        font-size: 1rem;
+        margin-top: 0;
+      }
+
+      #history-area {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+
+        flex-grow: 1;
+      }
+
+      #history-text {
+        font-size: 2rem;
+      }
+
+      #history-score {
+        font-size: 5rem;
+        margin-left: 1rem;
+        padding: 1rem;
+        line-height: 1;
+      }
+    </style>
   </head>
   <body>
     <h1>Emotive Call-Centre</h1>
@@ -17,7 +58,12 @@
         let historyText = data.text;
         let historyScore = data.score
         window["history-text"].textContent = historyText;
-        window["history-score"].textContent = historyScore;
+        window["history-score"].textContent = (historyScore * 100).toPrecision(2) + '%';
+
+        let hue = 60 * historyScore + 10;
+
+        window["history-score"].style.backgroundColor = `hsl(${hue}, 57%, 76%)`; 
+
       };
     </script>
   </body>
