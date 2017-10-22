@@ -37,6 +37,7 @@ app.ws('/connect', function(ws, req) {
     if (msg instanceof String) {
       console.log(msg);
     } else if(msg instanceof Buffer) {
+      console.log(msg.length);
       ws.send(msg);
       if(!client.ready) {
         missedMessages.push(generator.generateAudioRequest(msg));
