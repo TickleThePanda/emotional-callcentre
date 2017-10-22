@@ -34,11 +34,12 @@ app.ws('/connect', function(ws, req) {
       if (msg instanceof String) {
         console.log("recieved text from", msg);
       } else if(msg instanceof Buffer) {
+        console.log("recieving ", msg.slice(-50));
         ws.send(msg);
         client.sendMessage(generator.generateAudioRequest(msg));
       }
     });
-    
+
     ws.on('close', client.close);
   });;
 

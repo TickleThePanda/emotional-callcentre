@@ -13,9 +13,7 @@ module.exports = class RawMessageBuilder {
     
       let sizeDataView = new DataView(buffer, 0, 2);
       let headersDataView = new DataView(buffer, 2, headersArray.length);
-      let contentDataView = new DataView(buffer,
-        2 + headersArray.length,
-        payload.length);
+      let contentDataView = new DataView(buffer, 2 + headersArray.length, payload.length);
     
       sizeDataView.setUint16(0, headersArray.length);
     
@@ -23,9 +21,12 @@ module.exports = class RawMessageBuilder {
         headersDataView.setUint8(i, headersArray[i]);
       }
     
+      //the payload is Uint8 (although the format of audio/l16 is Int16) so we need to write it out as that.
       for(let i = 0; i < payload.length; i++) {
-        contentDataView.setInt8(i, payload[i]);
+        contentDataView.setUint8(i, payload[i]);
       }
+
+      console.log("sending ", Buffer.from(contentDataView.buffer).slice(-50));
     
       return buffer;
     }
