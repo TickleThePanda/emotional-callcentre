@@ -31,21 +31,12 @@ app.ws('/connect', function(ws, req) {
     console.log(m);
   });
 
-  let missedMessages = [];
-
   ws.on('message', function(msg) {
     if (msg instanceof String) {
-      console.log(msg);
+      console.log("recieved text from", msg);
     } else if(msg instanceof Buffer) {
       ws.send(msg);
-      if(!client.ready) {
-        missedMessages.push(generator.generateAudioRequest(msg));
-      } else {
-        while(missedMessages.length) {
-          client.sendMessage(missedMessages.shift());
-        }
-        client.sendMessage(generator.generateAudioRequest(msg));
-      }
+      client.sendMessage(generator.generateAudioRequest(msg));
     }
   });
   ws.on('close', client.close);
