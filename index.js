@@ -8,21 +8,17 @@ const request = require('request');
 
 app.set('port', (process.env.PORT || 5000));
 
-app.get('/', function(req, res, next) {
-  console.log("webhook get:", req.body);
-  res.status(200).send({ answer_url: "/ncco" });
-});
-
-app.post('/', function(req, res, next) {
-  console.log("webhook post:", req.body);
-  res.status(200).send();
-});
-
-app.get("/ncco", function(req, res, next) {
+app.all('/answer', function(req, res, next) {
+  console.log('we should answer a call ', req.url, req.body);
   res.sendFile(__dirname + "/ncco.json");
 });
 
-app.get("/index.html", function(req, res, next) {
+app.all('/events', function(req, res, next) {
+  console.log('an event happened from nexmo ', req.url, req.body);
+  res.status(200);
+});
+
+app.get("/", function(req, res, next) {
   res.sendFile(__dirname + "/index.html");
 })
 

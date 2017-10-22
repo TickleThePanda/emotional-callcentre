@@ -6,7 +6,7 @@
   {
     "action":"connect",
     "eventUrl":[
-      "https://emotional-callcentre.herokuapp.com/"
+      "https://emotional-callcentre.herokuapp.com/events"
     ],
     "from":"442036178286",
     "endpoint":[
