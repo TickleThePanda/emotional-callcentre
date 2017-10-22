@@ -15,7 +15,7 @@ module.exports = class SpeechToTextClient {
     this.generator = generator;
     this.listeners = {};
     this.TOKEN_ENDPOINT = 'https://api.cognitive.microsoft.com/sts/v1.0/issueToken';
-    this.TYPE = 'conversation'
+    this.TYPE = 'interactive'
     this.SPEECH_PATH = '/speech/recognition/' + this.TYPE + '/cognitiveservices/v1';
     this.SPEECH_ENDPOINT = 'wss://speech.platform.bing.com' + this.SPEECH_PATH + '?language=en-US';
   }
